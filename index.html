@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Strength & Breach Checker</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+  <div class="app">
+    <header>
+      <h1 class="glow-title">Password Strength Analyzer</h1>
+      <p id="header-sub">Real-time entropy scoring & Have I Been Pwned breach check (k-anonymity)</p>
+    </header>
+
+    <div class="mode-tabs" role="tablist">
+      <button type="button" class="mode-tab active" id="tab-checker" role="tab" aria-selected="true" data-mode="checker">Password Checker</button>
+      <button type="button" class="mode-tab" role="tab" aria-selected="false" data-mode="generator">Password Generator</button>
+    </div>
+
+    <!-- Checker mode -->
+    <section class="card mode-panel" id="panel-checker">
+      <label for="password">Enter a password to analyze</label>
+      <div class="input-wrap">
+        <input type="password" id="password" autocomplete="off" placeholder="Type a password…">
+        <button type="button" id="toggle-vis" class="icon-btn" aria-label="Show password">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button type="button" id="clear-pw" class="icon-btn" aria-label="Clear password" title="Clear">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="live-bar-wrap" id="live-bar-wrap" hidden>
+        <div class="live-bar" id="live-bar"></div>
+      </div>
+      <p class="hint">Password never leaves your browser in plain text. Breach check uses SHA-1 k-anonymity (first 5 hash chars only).</p>
+    </section>
+
+    <!-- Generator mode -->
+    <section class="card mode-panel hidden" id="panel-generator">
+      <p class="gen-intro">Create a strong random password, then analyze it automatically.</p>
+      <label for="gen-length">Length: <strong id="gen-length-val">16</strong> characters</label>
+      <input type="range" id="gen-length" min="8" max="32" value="16" class="range-input">
+
+      <div class="gen-options">
+        <label class="checkbox"><input type="checkbox" id="gen-lower" checked> Lowercase (a–z)</label>
+        <label class="checkbox"><input type="checkbox" id="gen-upper" checked> Uppercase (A–Z)</label>
+        <label class="checkbox"><input type="checkbox" id="gen-numbers" checked> Numbers (0–9)</label>
+        <label class="checkbox"><input type="checkbox" id="gen-symbols" checked> Symbols (!@#$…)</label>
+      </div>
+
+      <button type="button" class="btn-primary" id="gen-btn">Generate password</button>
+
+      <label for="gen-output" class="gen-output-label">Generated password</label>
+      <div class="input-wrap">
+        <input type="text" id="gen-output" readonly placeholder="Click Generate…">
+        <button type="button" id="copy-pw" class="icon-btn" aria-label="Copy password" title="Copy">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="card results" id="results" hidden>
+      <div class="strength-bar-wrap">
+        <div class="strength-bar" id="strength-bar"></div>
+      </div>
+      <p class="strength-label" id="strength-label">—</p>
+      <p class="entropy" id="entropy">Entropy: — bits</p>
+      <p class="crack-time" id="crack-time"></p>
+
+      <ul class="checks" id="checks"></ul>
+
+      <div class="breach-section" id="breach-section">
+        <h3>Breach check</h3>
+        <p id="breach-status" class="breach-loading">Checking…</p>
+      </div>
+    </section>
+
+    <section class="info card">
+      <h3>How k-anonymity works</h3>
+      <p>Your password is hashed with SHA-1 locally. Only the <strong>first 5 characters</strong> of the hash are sent to the Have I Been Pwned API. The full password is never transmitted.</p>
+    </section>
+  </div>
+  <script src="js/matrix.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
